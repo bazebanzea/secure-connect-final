@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Shield, KeyRound, Smartphone, Lock, CheckCircle2, Zap, Globe, Users } from "lucide-react";
+import { Shield, KeyRound, Smartphone, Lock, CheckCircle2, Zap, Globe, Users, Fingerprint, ScanFace, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/SiteHeader";
 import heroImg from "@/assets/hero-security.jpg";
@@ -47,8 +47,9 @@ function Index() {
             </div>
             <div className="mt-12 flex flex-wrap gap-x-8 gap-y-3 text-sm text-white/70">
               <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> TOTP RFC 6238</div>
+              <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Passkeys & Face ID</div>
+              <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Authenticator intégré</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> Aucune carte requise</div>
-              <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-400" /> SDK et API REST</div>
             </div>
           </div>
         </div>
@@ -64,11 +65,14 @@ function Index() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
             { icon: Smartphone, title: "TOTP standard", desc: "Compatible avec Google Authenticator, Authy, 1Password et tout client RFC 6238." },
+            { icon: Fingerprint, title: "Passkeys & biométrie", desc: "Face ID, Touch ID, Windows Hello et clés de sécurité FIDO2. Connexion sans mot de passe." },
+            { icon: QrCode, title: "Authenticator intégré", desc: "Utilisez SentinelMFA comme Google Authenticator pour gérer les codes 2FA de tous vos comptes." },
             { icon: Shield, title: "Chiffrement bout-en-bout", desc: "Secrets stockés chiffrés au repos, jamais transmis en clair." },
             { icon: Zap, title: "Déploiement en minutes", desc: "SDK JavaScript, intégration en moins de 50 lignes." },
-            { icon: KeyRound, title: "Multi-facteurs", desc: "Gérez plusieurs facteurs par utilisateur avec rotation et révocation." },
+            { icon: KeyRound, title: "Multi-facteurs", desc: "TOTP, passkeys, empreinte digitale et reconnaissance faciale en un seul tableau de bord." },
             { icon: Globe, title: "API souveraine", desc: "Données hébergées en Europe, conformité RGPD by design." },
-            { icon: Users, title: "Gestion centralisée", desc: "Tableau de bord pour superviser les inscriptions et l'activité." },
+            { icon: ScanFace, title: "Face ID & empreinte", desc: "Authentification biométrique native via le standard WebAuthn. Aucun mot de passe requis." },
+            { icon: Users, title: "Gestion centralisée", desc: "Tableau de bord pour superviser les inscriptions et l'activité de tous vos facteurs." },
           ].map((f) => (
             <div key={f.title} className="group rounded-xl border bg-card p-6 shadow-[var(--shadow-card)] transition-all hover:border-primary/30 hover:shadow-[var(--shadow-elegant)]">
               <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-[image:var(--gradient-primary)] group-hover:text-primary-foreground transition-all">
@@ -91,9 +95,9 @@ function Index() {
               <p className="mt-4 text-lg text-muted-foreground">De l'application cliente au stockage chiffré, chaque couche applique le principe de moindre privilège.</p>
               <div className="mt-8 space-y-5">
                 {[
-                  { num: "01", title: "Couche client", desc: "SDK et UI d'enrôlement TOTP avec QR code." },
-                  { num: "02", title: "Couche API", desc: "Vérification cryptographique, rate limiting, audit." },
-                  { num: "03", title: "Couche données", desc: "Secrets chiffrés, isolation par tenant, RLS strict." },
+                  { num: "01", title: "Couche client", desc: "SDK, UI d'enrôlement TOTP, Passkeys WebAuthn et Authenticator intégré." },
+                  { num: "02", title: "Couche API", desc: "Vérification cryptographique, biométrie FIDO2, rate limiting, audit." },
+                  { num: "03", title: "Couche données", desc: "Secrets chiffrés, clés publiques Passkey, isolation par tenant, RLS strict." },
                 ].map((l) => (
                   <div key={l.num} className="flex gap-4">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border-2 border-primary/30 bg-background font-mono text-sm font-semibold text-primary">{l.num}</div>
@@ -112,7 +116,7 @@ function Index() {
                   {[
                     { label: "Application cliente", color: "bg-blue-500/10 border-blue-500/30 text-blue-700 dark:text-blue-300" },
                     { label: "Passerelle API · TLS 1.3", color: "bg-indigo-500/10 border-indigo-500/30 text-indigo-700 dark:text-indigo-300" },
-                    { label: "Service MFA · TOTP", color: "bg-violet-500/10 border-violet-500/30 text-violet-700 dark:text-violet-300" },
+                    { label: "Service MFA · TOTP + Passkeys + Biométrie", color: "bg-violet-500/10 border-violet-500/30 text-violet-700 dark:text-violet-300" },
                     { label: "Vault chiffré · AES-256", color: "bg-cyan-500/10 border-cyan-500/30 text-cyan-700 dark:text-cyan-300" },
                   ].map((row, i) => (
                     <div key={row.label}>

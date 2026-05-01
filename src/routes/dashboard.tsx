@@ -1,12 +1,25 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
-import { Shield, Plus, Trash2, CheckCircle2, AlertCircle, Smartphone, Loader2, KeyRound } from "lucide-react";
+import {
+  Shield,
+  Plus,
+  Trash2,
+  CheckCircle2,
+  AlertCircle,
+  Smartphone,
+  Loader2,
+  KeyRound,
+  QrCode,
+  ArrowRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/SiteHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { EnrollTotpDialog } from "@/components/EnrollTotpDialog";
 import { PasskeysSection } from "@/components/PasskeysSection";
+import { BiometricMfaSection } from "@/components/BiometricMfaSection";
+import { AddMfaDialog } from "@/components/AddMfaDialog";
 import type { User } from "@supabase/supabase-js";
 
 export const Route = createFileRoute("/dashboard")({
@@ -26,6 +39,7 @@ function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [factors, setFactors] = useState<Factor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [addMfaOpen, setAddMfaOpen] = useState(false);
   const [enrollOpen, setEnrollOpen] = useState(false);
 
   useEffect(() => {
@@ -37,7 +51,10 @@ function Dashboard() {
       .from("mfa_factors")
       .select("id, friendly_name, factor_type, verified, created_at")
       .order("created_at", { ascending: false });
-    if (error) { toast.error("Impossible de charger les facteurs"); return; }
+    if (error) {
+      toast.error("Impossible de charger les facteurs");
+      return;
+    }
     setFactors(data ?? []);
   }, []);
 
@@ -46,7 +63,10 @@ function Dashboard() {
     const init = async () => {
       const { data } = await supabase.auth.getSession();
       if (!data.session) {
-        navigate({ to: "/login", search: { mode: "login", redirect: "/dashboard" } });
+        navigate({
+          to: "/login",
+          search: { mode: "login", redirect: "/dashboard" },
+        });
         return;
       }
       if (!mounted) return;
@@ -56,16 +76,42 @@ function Dashboard() {
     };
     init();
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (!session) navigate({ to: "/login", search: { mode: "login", redirect: "/dashboard" } });
+      if (!session)
+        navigate({
+          to: "/login",
+          search: { mode: "login", redirect: "/dashboard" },
+        });
     });
-    return () => { mounted = false; sub.subscription.unsubscribe(); };
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
   }, [navigate, loadFactors]);
 
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from("mfa_factors").delete().eq("id", id);
-    if (error) { toast.error("Suppression impossible"); return; }
+    if (error) {
+      toast.error("Suppression impossible");
+      return;
+    }
     toast.success("Facteur supprimé");
     loadFactors();
+  };
+
+  const handleMfaChoice = (choice: "totp" | "passkey" | "authenticator") => {
+    switch (choice) {
+      case "totp":
+        setEnrollOpen(true);
+        break;
+      case "passkey":
+        document
+          .getElementById("passkeys-section")
+          ?.scrollIntoView({ behavior: "smooth" });
+        break;
+      case "authenticator":
+        navigate({ to: "/authenticator" });
+        break;
+    }
   };
 
   if (loading) {
@@ -86,47 +132,106 @@ function Dashboard() {
         <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Bonjour, {user?.user_metadata?.display_name || user?.email?.split("@")[0]}
+              Bonjour,{" "}
+              {user?.user_metadata?.display_name ||
+                user?.email?.split("@")[0]}
             </h1>
-            <p className="mt-1 text-muted-foreground">Gérez vos facteurs d'authentification multi-facteurs.</p>
+            <p className="mt-1 text-muted-foreground">
+              Gérez vos facteurs d'authentification multi-facteurs.
+            </p>
           </div>
-          <Button onClick={() => setEnrollOpen(true)} className="bg-[image:var(--gradient-primary)] shadow-[var(--shadow-elegant)]">
+          <Button
+            onClick={() => setAddMfaOpen(true)}
+            className="bg-[image:var(--gradient-primary)] shadow-[var(--shadow-elegant)]"
+          >
             <Plus className="h-4 w-4" />
             Ajouter un facteur
           </Button>
         </div>
 
         {/* Status card */}
-        <div className={`rounded-xl border p-6 mb-8 ${isProtected ? "bg-success/5 border-success/30" : "bg-destructive/5 border-destructive/30"}`}>
+        <div
+          className={`rounded-xl border p-6 mb-8 ${
+            isProtected
+              ? "bg-success/5 border-success/30"
+              : "bg-destructive/5 border-destructive/30"
+          }`}
+        >
           <div className="flex items-start gap-4">
-            <div className={`flex h-11 w-11 items-center justify-center rounded-lg ${isProtected ? "bg-success/15 text-success" : "bg-destructive/15 text-destructive"}`}>
-              {isProtected ? <Shield className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
+            <div
+              className={`flex h-11 w-11 items-center justify-center rounded-lg ${
+                isProtected
+                  ? "bg-success/15 text-success"
+                  : "bg-destructive/15 text-destructive"
+              }`}
+            >
+              {isProtected ? (
+                <Shield className="h-5 w-5" />
+              ) : (
+                <AlertCircle className="h-5 w-5" />
+              )}
             </div>
             <div className="flex-1">
-              <h2 className="font-semibold">{isProtected ? "Compte protégé par MFA" : "MFA non activée"}</h2>
+              <h2 className="font-semibold">
+                {isProtected
+                  ? "Compte protégé par MFA"
+                  : "MFA non activée"}
+              </h2>
               <p className="text-sm text-muted-foreground mt-1">
                 {isProtected
-                  ? `Vous avez ${verifiedCount} facteur${verifiedCount > 1 ? "s" : ""} vérifié${verifiedCount > 1 ? "s" : ""}.`
-                  : "Ajoutez un facteur TOTP pour sécuriser votre compte."}
+                  ? `Vous avez ${verifiedCount} facteur${
+                      verifiedCount > 1 ? "s" : ""
+                    } vérifié${verifiedCount > 1 ? "s" : ""}.`
+                  : "Ajoutez un facteur pour sécuriser votre compte."}
               </p>
             </div>
           </div>
         </div>
+
+        {/* Authenticator promo card */}
+        <Link
+          to="/authenticator"
+          className="block rounded-xl border bg-card p-5 mb-6 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elegant)] hover:border-primary/20 transition-all group"
+        >
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[image:var(--gradient-primary)] text-primary-foreground shrink-0">
+              <QrCode className="h-6 w-6" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold">SentinelMFA Authenticator</h3>
+                <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                  Nouveau
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Utilisez SentinelMFA comme Google Authenticator pour tous vos
+                comptes 2FA.
+              </p>
+            </div>
+            <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" />
+          </div>
+        </Link>
 
         {/* Factors list */}
         <div className="rounded-xl border bg-card shadow-[var(--shadow-card)]">
           <div className="p-6 border-b">
             <h3 className="font-semibold flex items-center gap-2">
               <KeyRound className="h-4 w-4 text-primary" />
-              Mes facteurs
+              Mes facteurs TOTP
             </h3>
           </div>
           {factors.length === 0 ? (
             <div className="p-12 text-center">
               <Smartphone className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-              <p className="font-medium">Aucun facteur enrôlé</p>
-              <p className="text-sm text-muted-foreground mt-1">Ajoutez votre premier facteur TOTP.</p>
-              <Button onClick={() => setEnrollOpen(true)} className="mt-6 bg-[image:var(--gradient-primary)]">
+              <p className="font-medium">Aucun facteur TOTP enrôlé</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Ajoutez votre premier facteur TOTP.
+              </p>
+              <Button
+                onClick={() => setEnrollOpen(true)}
+                className="mt-6 bg-[image:var(--gradient-primary)]"
+              >
                 <Plus className="h-4 w-4" />
                 Enrôler un facteur
               </Button>
@@ -140,7 +245,9 @@ function Dashboard() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="font-medium truncate">{f.friendly_name}</p>
+                      <p className="font-medium truncate">
+                        {f.friendly_name}
+                      </p>
                       {f.verified ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
                           <CheckCircle2 className="h-3 w-3" /> Vérifié
@@ -152,10 +259,16 @@ function Dashboard() {
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      TOTP · ajouté le {new Date(f.created_at).toLocaleDateString("fr-FR")}
+                      TOTP · ajouté le{" "}
+                      {new Date(f.created_at).toLocaleDateString("fr-FR")}
                     </p>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={() => handleDelete(f.id)} className="text-muted-foreground hover:text-destructive">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDelete(f.id)}
+                    className="text-muted-foreground hover:text-destructive"
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </li>
@@ -164,14 +277,31 @@ function Dashboard() {
           )}
         </div>
 
-        <PasskeysSection />
+        {/* Passkeys Section */}
+        <div id="passkeys-section">
+          <PasskeysSection />
+        </div>
+
+        {/* Biometric Info Section */}
+        <BiometricMfaSection />
       </main>
 
+      {/* MFA Type Chooser */}
+      <AddMfaDialog
+        open={addMfaOpen}
+        onOpenChange={setAddMfaOpen}
+        onChoice={handleMfaChoice}
+      />
+
+      {/* TOTP Enrollment */}
       <EnrollTotpDialog
         open={enrollOpen}
         onOpenChange={setEnrollOpen}
         userEmail={user?.email ?? ""}
-        onComplete={() => { setEnrollOpen(false); loadFactors(); }}
+        onComplete={() => {
+          setEnrollOpen(false);
+          loadFactors();
+        }}
       />
     </div>
   );

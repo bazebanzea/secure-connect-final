@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Shield, Lock, FileCheck, Globe, Server, Eye } from "lucide-react";
+import { Shield, Lock, FileCheck, Globe, Server, Eye, Fingerprint, ScanFace } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 
 export const Route = createFileRoute("/security")({
@@ -16,6 +16,8 @@ function SecurityPage() {
     { icon: Lock, title: "Chiffrement AES-256", desc: "Tous les secrets TOTP sont chiffrés au repos avec AES-256-GCM." },
     { icon: Shield, title: "TLS 1.3 partout", desc: "Toutes les communications réseau utilisent TLS 1.3 avec PFS." },
     { icon: FileCheck, title: "RFC 6238", desc: "Implémentation conforme du standard TOTP, fenêtre de tolérance configurable." },
+    { icon: Fingerprint, title: "WebAuthn FIDO2", desc: "Passkeys et biométrie conformes au standard FIDO2. Clés privées isolées sur l'appareil, jamais transmises." },
+    { icon: ScanFace, title: "Biométrie locale", desc: "Face ID, Touch ID et Windows Hello restent sur votre appareil. Seule une clé publique est stockée côté serveur." },
     { icon: Globe, title: "Hébergement UE", desc: "Données stockées exclusivement en Union Européenne, conforme RGPD." },
     { icon: Server, title: "Isolation tenant", desc: "Row-Level Security stricte au niveau base de données." },
     { icon: Eye, title: "Audit complet", desc: "Journalisation de tous les événements d'authentification." },

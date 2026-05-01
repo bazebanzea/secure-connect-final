@@ -44,6 +44,9 @@ export function SiteHeader() {
               <Button asChild variant="ghost" size="sm">
                 <Link to="/dashboard">Tableau de bord</Link>
               </Button>
+              <Button asChild variant="ghost" size="sm">
+                <Link to="/authenticator">Authenticator</Link>
+              </Button>
               <Button onClick={handleLogout} variant="outline" size="sm">
                 <LogOut className="h-4 w-4" />
               </Button>

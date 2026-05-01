@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      authenticator_tokens: {
+        Row: {
+          id: string
+          user_id: string
+          issuer: string
+          account: string
+          secret: string
+          algorithm: string
+          digits: number
+          period: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          issuer: string
+          account?: string
+          secret: string
+          algorithm?: string
+          digits?: number
+          period?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          issuer?: string
+          account?: string
+          secret?: string
+          algorithm?: string
+          digits?: number
+          period?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
       mfa_factors: {
         Row: {
           created_at: string

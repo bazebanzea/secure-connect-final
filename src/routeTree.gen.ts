@@ -13,6 +13,7 @@ import { Route as SecurityRouteImport } from './routes/security'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as AuthenticatorRouteImport } from './routes/authenticator'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SecurityRoute = SecurityRouteImport.update({
@@ -35,6 +36,11 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatorRoute = AuthenticatorRouteImport.update({
+  id: '/authenticator',
+  path: '/authenticator',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -43,6 +49,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/authenticator': typeof AuthenticatorRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/authenticator': typeof AuthenticatorRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/authenticator': typeof AuthenticatorRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
@@ -65,14 +74,15 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/login' | '/pricing' | '/security'
+  fullPaths: '/' | '/authenticator' | '/dashboard' | '/login' | '/pricing' | '/security'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/login' | '/pricing' | '/security'
-  id: '__root__' | '/' | '/dashboard' | '/login' | '/pricing' | '/security'
+  to: '/' | '/authenticator' | '/dashboard' | '/login' | '/pricing' | '/security'
+  id: '__root__' | '/' | '/authenticator' | '/dashboard' | '/login' | '/pricing' | '/security'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatorRoute: typeof AuthenticatorRoute
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
   PricingRoute: typeof PricingRoute
@@ -109,6 +119,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/authenticator': {
+      id: '/authenticator'
+      path: '/authenticator'
+      fullPath: '/authenticator'
+      preLoaderRoute: typeof AuthenticatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -121,6 +138,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatorRoute: AuthenticatorRoute,
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
   PricingRoute: PricingRoute,
