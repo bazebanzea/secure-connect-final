@@ -57,9 +57,7 @@ export function AddMfaDialog({ open, onOpenChange, onChoice }: Props) {
             <KeyRound className="h-5 w-5 text-primary" />
             Ajouter un facteur d'authentification
           </DialogTitle>
-          <DialogDescription>
-            Choisissez le type de facteur MFA à configurer.
-          </DialogDescription>
+          <DialogDescription>Choisissez le type de facteur MFA à configurer.</DialogDescription>
         </DialogHeader>
         <div className="space-y-3 py-2">
           {options.map((opt) => (
@@ -85,9 +83,7 @@ export function AddMfaDialog({ open, onOpenChange, onChoice }: Props) {
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  {opt.desc}
-                </p>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{opt.desc}</p>
               </div>
             </button>
           ))}

@@ -11,7 +11,7 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
       !SUPABASE_KEY && "VITE_SUPABASE_PUBLISHABLE_KEY",
     ]
       .filter(Boolean)
-      .join(", ")}. Vérifiez votre fichier .env`
+      .join(", ")}. Vérifiez votre fichier .env`,
   );
 }
 

@@ -9,7 +9,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { PasskeyLoginButton } from "@/components/PasskeyLoginButton";
 
 export const Route = createFileRoute("/login")({
-  validateSearch: (s: Record<string, unknown>): { mode: "login" | "signup"; redirect?: string } => ({
+  validateSearch: (
+    s: Record<string, unknown>,
+  ): { mode: "login" | "signup"; redirect?: string } => ({
     mode: (s.mode as string) === "signup" ? "signup" : "login",
     redirect: typeof s.redirect === "string" ? s.redirect : undefined,
   }),
@@ -80,8 +82,12 @@ function LoginPage() {
           <span className="text-lg font-semibold">SentinelMFA</span>
         </Link>
         <div className="text-white relative z-10">
-          <h2 className="text-3xl font-bold leading-tight">L'authentification forte pour vos applications critiques.</h2>
-          <p className="mt-4 text-white/75">Rejoignez les entreprises qui font confiance à SentinelMFA pour protéger leurs accès.</p>
+          <h2 className="text-3xl font-bold leading-tight">
+            L'authentification forte pour vos applications critiques.
+          </h2>
+          <p className="mt-4 text-white/75">
+            Rejoignez les entreprises qui font confiance à SentinelMFA pour protéger leurs accès.
+          </p>
         </div>
         <div className="text-xs text-white/50">Conforme SOC 2 · ISO 27001 · RGPD</div>
       </div>
@@ -95,25 +101,53 @@ function LoginPage() {
               <span className="font-semibold">SentinelMFA</span>
             </Link>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">{isSignup ? "Créer un compte" : "Connexion"}</h1>
-          <p className="mt-2 text-muted-foreground">{isSignup ? "Démarrez en quelques secondes." : "Heureux de vous revoir."}</p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {isSignup ? "Créer un compte" : "Connexion"}
+          </h1>
+          <p className="mt-2 text-muted-foreground">
+            {isSignup ? "Démarrez en quelques secondes." : "Heureux de vous revoir."}
+          </p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-4">
             {isSignup && (
               <div className="space-y-2">
                 <Label htmlFor="name">Nom d'affichage</Label>
-                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Jean Dupont" />
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Jean Dupont"
+                />
               </div>
             )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="vous@entreprise.com" />
+              <Input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="vous@entreprise.com"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Mot de passe</Label>
-              <Input id="password" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Au moins 8 caractères" />
+              <Input
+                id="password"
+                type="password"
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Au moins 8 caractères"
+              />
             </div>
-            <Button type="submit" disabled={loading} className="w-full bg-[image:var(--gradient-primary)] shadow-[var(--shadow-elegant)]">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[image:var(--gradient-primary)] shadow-[var(--shadow-elegant)]"
+            >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               {isSignup ? "Créer mon compte" : "Se connecter"}
             </Button>
@@ -132,7 +166,10 @@ function LoginPage() {
 
           <p className="mt-6 text-sm text-center text-muted-foreground">
             {isSignup ? "Déjà un compte ? " : "Pas encore de compte ? "}
-            <button onClick={() => setIsSignup(!isSignup)} className="text-primary font-medium hover:underline">
+            <button
+              onClick={() => setIsSignup(!isSignup)}
+              className="text-primary font-medium hover:underline"
+            >
               {isSignup ? "Se connecter" : "Créer un compte"}
             </button>
           </p>

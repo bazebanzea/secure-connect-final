@@ -104,9 +104,7 @@ function Dashboard() {
         setEnrollOpen(true);
         break;
       case "passkey":
-        document
-          .getElementById("passkeys-section")
-          ?.scrollIntoView({ behavior: "smooth" });
+        document.getElementById("passkeys-section")?.scrollIntoView({ behavior: "smooth" });
         break;
       case "authenticator":
         navigate({ to: "/authenticator" });
@@ -132,9 +130,7 @@ function Dashboard() {
         <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Bonjour,{" "}
-              {user?.user_metadata?.display_name ||
-                user?.email?.split("@")[0]}
+              Bonjour, {user?.user_metadata?.display_name || user?.email?.split("@")[0]}
             </h1>
             <p className="mt-1 text-muted-foreground">
               Gérez vos facteurs d'authentification multi-facteurs.
@@ -160,22 +156,14 @@ function Dashboard() {
           <div className="flex items-start gap-4">
             <div
               className={`flex h-11 w-11 items-center justify-center rounded-lg ${
-                isProtected
-                  ? "bg-success/15 text-success"
-                  : "bg-destructive/15 text-destructive"
+                isProtected ? "bg-success/15 text-success" : "bg-destructive/15 text-destructive"
               }`}
             >
-              {isProtected ? (
-                <Shield className="h-5 w-5" />
-              ) : (
-                <AlertCircle className="h-5 w-5" />
-              )}
+              {isProtected ? <Shield className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
             </div>
             <div className="flex-1">
               <h2 className="font-semibold">
-                {isProtected
-                  ? "Compte protégé par MFA"
-                  : "MFA non activée"}
+                {isProtected ? "Compte protégé par MFA" : "MFA non activée"}
               </h2>
               <p className="text-sm text-muted-foreground mt-1">
                 {isProtected
@@ -205,8 +193,7 @@ function Dashboard() {
                 </span>
               </div>
               <p className="text-sm text-muted-foreground mt-0.5">
-                Utilisez SentinelMFA comme Google Authenticator pour tous vos
-                comptes 2FA.
+                Utilisez SentinelMFA comme Google Authenticator pour tous vos comptes 2FA.
               </p>
             </div>
             <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" />
@@ -245,9 +232,7 @@ function Dashboard() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="font-medium truncate">
-                        {f.friendly_name}
-                      </p>
+                      <p className="font-medium truncate">{f.friendly_name}</p>
                       {f.verified ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
                           <CheckCircle2 className="h-3 w-3" /> Vérifié
@@ -259,8 +244,7 @@ function Dashboard() {
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      TOTP · ajouté le{" "}
-                      {new Date(f.created_at).toLocaleDateString("fr-FR")}
+                      TOTP · ajouté le {new Date(f.created_at).toLocaleDateString("fr-FR")}
                     </p>
                   </div>
                   <Button
@@ -287,11 +271,7 @@ function Dashboard() {
       </main>
 
       {/* MFA Type Chooser */}
-      <AddMfaDialog
-        open={addMfaOpen}
-        onOpenChange={setAddMfaOpen}
-        onChoice={handleMfaChoice}
-      />
+      <AddMfaDialog open={addMfaOpen} onOpenChange={setAddMfaOpen} onChoice={handleMfaChoice} />
 
       {/* TOTP Enrollment */}
       <EnrollTotpDialog

@@ -29,13 +29,34 @@ export function SiteHeader() {
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[image:var(--gradient-primary)] shadow-[var(--shadow-glow)]">
             <Shield className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-lg font-semibold tracking-tight">Sentinel<span className="text-primary">MFA</span></span>
+          <span className="text-lg font-semibold tracking-tight">
+            Sentinel<span className="text-primary">MFA</span>
+          </span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-          <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: "text-foreground" }} className="hover:text-foreground transition-colors">Plateforme</Link>
-          <Link to="/security" activeProps={{ className: "text-foreground" }} className="hover:text-foreground transition-colors">Sécurité</Link>
-          <Link to="/pricing" activeProps={{ className: "text-foreground" }} className="hover:text-foreground transition-colors">Tarifs</Link>
+          <Link
+            to="/"
+            activeOptions={{ exact: true }}
+            activeProps={{ className: "text-foreground" }}
+            className="hover:text-foreground transition-colors"
+          >
+            Plateforme
+          </Link>
+          <Link
+            to="/security"
+            activeProps={{ className: "text-foreground" }}
+            className="hover:text-foreground transition-colors"
+          >
+            Sécurité
+          </Link>
+          <Link
+            to="/pricing"
+            activeProps={{ className: "text-foreground" }}
+            className="hover:text-foreground transition-colors"
+          >
+            Tarifs
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -56,8 +77,14 @@ export function SiteHeader() {
               <Button asChild variant="ghost" size="sm">
                 <Link to="/login">Connexion</Link>
               </Button>
-              <Button asChild size="sm" className="bg-[image:var(--gradient-primary)] shadow-[var(--shadow-elegant)]">
-                <Link to="/login" search={{ mode: "signup" }}>Démarrer</Link>
+              <Button
+                asChild
+                size="sm"
+                className="bg-[image:var(--gradient-primary)] shadow-[var(--shadow-elegant)]"
+              >
+                <Link to="/login" search={{ mode: "signup" }}>
+                  Démarrer
+                </Link>
               </Button>
             </>
           )}

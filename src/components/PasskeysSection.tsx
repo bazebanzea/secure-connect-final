@@ -1,9 +1,20 @@
 import { useEffect, useState, useCallback } from "react";
-import { startRegistration, browserSupportsWebAuthn, platformAuthenticatorIsAvailable } from "@simplewebauthn/browser";
+import {
+  startRegistration,
+  browserSupportsWebAuthn,
+  platformAuthenticatorIsAvailable,
+} from "@simplewebauthn/browser";
+import type { PublicKeyCredentialCreationOptionsJSON } from "@simplewebauthn/browser";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Fingerprint, Trash2, Loader2, Plus, ScanFace } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,7 +48,9 @@ export function PasskeysSection() {
 
   useEffect(() => {
     setSupported(browserSupportsWebAuthn());
-    platformAuthenticatorIsAvailable().then(setHasPlatform).catch(() => setHasPlatform(false));
+    platformAuthenticatorIsAvailable()
+      .then(setHasPlatform)
+      .catch(() => setHasPlatform(false));
     load();
   }, [load]);
 
@@ -49,7 +62,9 @@ export function PasskeysSection() {
     setEnrolling(true);
     try {
       const { options } = await startPasskeyRegistration({ data: { deviceLabel: label.trim() } });
-      const attResp = await startRegistration({ optionsJSON: options });
+      const attResp = await startRegistration({
+        optionsJSON: options as PublicKeyCredentialCreationOptionsJSON,
+      });
       await finishPasskeyRegistration({ data: { deviceLabel: label.trim(), response: attResp } });
       toast.success("Passkey enregistrée");
       setOpen(false);
@@ -84,7 +99,9 @@ export function PasskeysSection() {
             Passkeys & biométrie
           </h3>
           <p className="text-xs text-muted-foreground mt-1">
-            {hasPlatform ? "Face ID, Touch ID, Windows Hello détecté sur cet appareil." : "Utilisez une clé de sécurité ou un autre appareil."}
+            {hasPlatform
+              ? "Face ID, Touch ID, Windows Hello détecté sur cet appareil."
+              : "Utilisez une clé de sécurité ou un autre appareil."}
           </p>
         </div>
         <Button onClick={() => setOpen(true)} variant="outline" size="sm">
@@ -116,11 +133,18 @@ export function PasskeysSection() {
                 <p className="font-medium truncate">{k.device_name}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Ajoutée le {new Date(k.created_at).toLocaleDateString("fr-FR")}
-                  {k.last_used_at ? ` · dernière utilisation ${new Date(k.last_used_at).toLocaleDateString("fr-FR")}` : ""}
+                  {k.last_used_at
+                    ? ` · dernière utilisation ${new Date(k.last_used_at).toLocaleDateString("fr-FR")}`
+                    : ""}
                   {k.backed_up ? " · synchronisée" : ""}
                 </p>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => remove(k.id)} className="text-muted-foreground hover:text-destructive">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => remove(k.id)}
+                className="text-muted-foreground hover:text-destructive"
+              >
                 <Trash2 className="h-4 w-4" />
               </Button>
             </li>
@@ -133,7 +157,8 @@ export function PasskeysSection() {
           <DialogHeader>
             <DialogTitle>Ajouter une passkey</DialogTitle>
             <DialogDescription>
-              Votre navigateur va vous demander une vérification (Face ID, Touch ID, code…). Donnez un nom à cet appareil pour le reconnaître.
+              Votre navigateur va vous demander une vérification (Face ID, Touch ID, code…). Donnez
+              un nom à cet appareil pour le reconnaître.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
@@ -147,8 +172,16 @@ export function PasskeysSection() {
               autoFocus
             />
           </div>
-          <Button onClick={enroll} disabled={enrolling} className="w-full bg-[image:var(--gradient-primary)]">
-            {enrolling ? <Loader2 className="h-4 w-4 animate-spin" /> : <Fingerprint className="h-4 w-4" />}
+          <Button
+            onClick={enroll}
+            disabled={enrolling}
+            className="w-full bg-[image:var(--gradient-primary)]"
+          >
+            {enrolling ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Fingerprint className="h-4 w-4" />
+            )}
             Lancer l'enregistrement
           </Button>
         </DialogContent>

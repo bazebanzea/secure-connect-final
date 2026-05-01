@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 import { generateSecret, generateURI, verifySync } from "otplib";
 import QRCode from "qrcode";
 import { Loader2, Smartphone, CheckCircle2 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -50,12 +57,19 @@ export function EnrollTotpDialog({ open, onOpenChange, userEmail, onComplete }: 
       const otpauth = generateURI({ issuer: "SentinelMFA", label: userEmail, secret: newSecret });
       const dataUrl = await QRCode.toDataURL(otpauth, { width: 240, margin: 1 });
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
 
       const { data, error } = await supabase
         .from("mfa_factors")
-        .insert({ user_id: user.id, friendly_name: name.trim(), secret: newSecret, factor_type: "totp" })
+        .insert({
+          user_id: user.id,
+          friendly_name: name.trim(),
+          secret: newSecret,
+          factor_type: "totp",
+        })
         .select("id")
         .single();
       if (error) throw error;
@@ -117,7 +131,13 @@ export function EnrollTotpDialog({ open, onOpenChange, userEmail, onComplete }: 
           <div className="space-y-4 py-2">
             <div className="space-y-2">
               <Label htmlFor="factor-name">Nom du facteur</Label>
-              <Input id="factor-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="iPhone professionnel" autoFocus />
+              <Input
+                id="factor-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="iPhone professionnel"
+                autoFocus
+              />
             </div>
           </div>
         )}
@@ -128,8 +148,12 @@ export function EnrollTotpDialog({ open, onOpenChange, userEmail, onComplete }: 
               {qrDataUrl && <img src={qrDataUrl} alt="QR code MFA" width={240} height={240} />}
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">Ou saisissez ce code manuellement</Label>
-              <code className="block break-all rounded-md bg-muted p-3 text-xs font-mono">{secret}</code>
+              <Label className="text-xs text-muted-foreground">
+                Ou saisissez ce code manuellement
+              </Label>
+              <code className="block break-all rounded-md bg-muted p-3 text-xs font-mono">
+                {secret}
+              </code>
             </div>
           </div>
         )}
@@ -139,7 +163,9 @@ export function EnrollTotpDialog({ open, onOpenChange, userEmail, onComplete }: 
             <div className="flex justify-center">
               <InputOTP maxLength={6} value={code} onChange={setCode} autoFocus>
                 <InputOTPGroup>
-                  {[0, 1, 2, 3, 4, 5].map((i) => <InputOTPSlot key={i} index={i} />)}
+                  {[0, 1, 2, 3, 4, 5].map((i) => (
+                    <InputOTPSlot key={i} index={i} />
+                  ))}
                 </InputOTPGroup>
               </InputOTP>
             </div>
@@ -157,18 +183,29 @@ export function EnrollTotpDialog({ open, onOpenChange, userEmail, onComplete }: 
 
         <DialogFooter>
           {step === "name" && (
-            <Button onClick={handleStartEnrollment} disabled={loading} className="w-full bg-[image:var(--gradient-primary)]">
+            <Button
+              onClick={handleStartEnrollment}
+              disabled={loading}
+              className="w-full bg-[image:var(--gradient-primary)]"
+            >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               Continuer
             </Button>
           )}
           {step === "scan" && (
-            <Button onClick={() => setStep("verify")} className="w-full bg-[image:var(--gradient-primary)]">
+            <Button
+              onClick={() => setStep("verify")}
+              className="w-full bg-[image:var(--gradient-primary)]"
+            >
               J'ai scanné, vérifier
             </Button>
           )}
           {step === "verify" && (
-            <Button onClick={handleVerify} disabled={loading || code.length !== 6} className="w-full bg-[image:var(--gradient-primary)]">
+            <Button
+              onClick={handleVerify}
+              disabled={loading || code.length !== 6}
+              className="w-full bg-[image:var(--gradient-primary)]"
+            >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               Vérifier et activer
             </Button>

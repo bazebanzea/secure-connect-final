@@ -8,11 +8,7 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const FUNCTIONS_BASE = `${SUPABASE_URL}/functions/v1`;
 
 /** Helper: appelle une Edge Function avec optionnellement le JWT de l'utilisateur */
-async function callFn<T = unknown>(
-  name: string,
-  body: unknown,
-  requireAuth = false
-): Promise<T> {
+async function callFn<T = unknown>(name: string, body: unknown, requireAuth = false): Promise<T> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
@@ -41,15 +37,11 @@ async function callFn<T = unknown>(
 
 // ─── Registration (nécessite une session active) ───────────────────────────
 
-export async function startPasskeyRegistration({
-  data,
-}: {
-  data: { deviceLabel: string };
-}) {
+export async function startPasskeyRegistration({ data }: { data: { deviceLabel: string } }) {
   return callFn<{ options: unknown; deviceLabel: string }>(
     "webauthn-register-start",
     { deviceLabel: data.deviceLabel },
-    true
+    true,
   );
 }
 
@@ -61,28 +53,17 @@ export async function finishPasskeyRegistration({
   return callFn<{ verified: boolean }>(
     "webauthn-register-finish",
     { deviceLabel: data.deviceLabel, response: data.response },
-    true
+    true,
   );
 }
 
 // ─── Authentication (pas de session requise) ───────────────────────────────
 
-export async function startPasskeyAuthentication({
-  data,
-}: {
-  data: { email?: string };
-}) {
-  return callFn<Record<string, unknown>>(
-    "webauthn-auth-start",
-    { email: data.email ?? null }
-  );
+export async function startPasskeyAuthentication({ data }: { data: { email?: string } }) {
+  return callFn<Record<string, unknown>>("webauthn-auth-start", { email: data.email ?? null });
 }
 
-export async function finishPasskeyAuthentication({
-  data,
-}: {
-  data: { response: unknown };
-}) {
+export async function finishPasskeyAuthentication({ data }: { data: { response: unknown } }) {
   return callFn<{
     verified: boolean;
     email: string;

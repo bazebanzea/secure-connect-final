@@ -64,33 +64,35 @@ export function BiometricMfaSection() {
 
       <div className="p-6">
         <div className="grid sm:grid-cols-3 gap-4">
-          {(Object.entries(biometricInfo) as [BiometricType, (typeof biometricInfo)[BiometricType]][]).map(
-            ([key, info]) => (
+          {(
+            Object.entries(biometricInfo) as [
+              BiometricType,
+              (typeof biometricInfo)[BiometricType],
+            ][]
+          ).map(([key, info]) => (
+            <div
+              key={key}
+              className="rounded-xl border p-5 text-center hover:border-primary/20 transition-colors"
+            >
               <div
-                key={key}
-                className="rounded-xl border p-5 text-center hover:border-primary/20 transition-colors"
+                className={`flex h-12 w-12 items-center justify-center rounded-xl mx-auto ${info.color}`}
               >
-                <div
-                  className={`flex h-12 w-12 items-center justify-center rounded-xl mx-auto ${info.color}`}
-                >
-                  <info.icon className="h-6 w-6" />
-                </div>
-                <p className="font-medium text-sm mt-3">{info.label}</p>
-                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                  {info.desc.split(".")[0]}.
-                </p>
+                <info.icon className="h-6 w-6" />
               </div>
-            )
-          )}
+              <p className="font-medium text-sm mt-3">{info.label}</p>
+              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                {info.desc.split(".")[0]}.
+              </p>
+            </div>
+          ))}
         </div>
 
         <div className="mt-5 rounded-lg bg-accent/40 p-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
             <strong className="text-foreground">Comment ça marche ?</strong> Lorsque vous
-            enregistrez une Passkey (section ci-dessus), votre appareil utilise
-            automatiquement la biométrie disponible — Face ID sur iPhone,
-            Touch ID sur Mac, Windows Hello sur PC. C'est le standard WebAuthn
-            FIDO2, plus sûr qu'un simple mot de passe.
+            enregistrez une Passkey (section ci-dessus), votre appareil utilise automatiquement la
+            biométrie disponible — Face ID sur iPhone, Touch ID sur Mac, Windows Hello sur PC. C'est
+            le standard WebAuthn FIDO2, plus sûr qu'un simple mot de passe.
           </p>
         </div>
       </div>
@@ -108,29 +110,29 @@ export function BiometricMfaSection() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            {(Object.entries(biometricInfo) as [BiometricType, (typeof biometricInfo)[BiometricType]][]).map(
-              ([key, info]) => (
-                <div key={key} className="flex gap-4 items-start">
-                  <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-lg shrink-0 ${info.color}`}
-                  >
-                    <info.icon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">{info.label}</p>
-                    <p className="text-sm text-muted-foreground mt-0.5">
-                      {info.desc}
-                    </p>
-                  </div>
+            {(
+              Object.entries(biometricInfo) as [
+                BiometricType,
+                (typeof biometricInfo)[BiometricType],
+              ][]
+            ).map(([key, info]) => (
+              <div key={key} className="flex gap-4 items-start">
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-lg shrink-0 ${info.color}`}
+                >
+                  <info.icon className="h-5 w-5" />
                 </div>
-              )
-            )}
+                <div>
+                  <p className="font-semibold text-sm">{info.label}</p>
+                  <p className="text-sm text-muted-foreground mt-0.5">{info.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
           <div className="rounded-lg bg-accent/40 p-4">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              La biométrie est liée à votre appareil et n'est jamais envoyée
-              sur nos serveurs. Seule une clé publique cryptographique est
-              stockée, conformément au standard FIDO2.
+              La biométrie est liée à votre appareil et n'est jamais envoyée sur nos serveurs. Seule
+              une clé publique cryptographique est stockée, conformément au standard FIDO2.
             </p>
           </div>
         </DialogContent>

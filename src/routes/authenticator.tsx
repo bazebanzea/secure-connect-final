@@ -30,7 +30,7 @@ import {
 import { SiteHeader } from "@/components/SiteHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { generateToken, verifySync } from "otplib";
+import { generateSync } from "otplib";
 import type { User } from "@supabase/supabase-js";
 
 export const Route = createFileRoute("/authenticator")({
@@ -54,7 +54,7 @@ function useTotp(secret: string) {
 
     const update = () => {
       try {
-        const token = generateToken(secret);
+        const token = generateSync({ secret });
         setCode(token);
         const epoch = Math.floor(Date.now() / 1000);
         setRemaining(30 - (epoch % 30));
@@ -71,13 +71,7 @@ function useTotp(secret: string) {
   return { code, remaining };
 }
 
-function TokenCard({
-  token,
-  onDelete,
-}: {
-  token: ExternalToken;
-  onDelete: (id: string) => void;
-}) {
+function TokenCard({ token, onDelete }: { token: ExternalToken; onDelete: (id: string) => void }) {
   const { code, remaining } = useTotp(token.secret);
   const [copied, setCopied] = useState(false);
 
@@ -96,7 +90,15 @@ function TokenCard({
       {/* Timer ring */}
       <div className="absolute top-4 right-4">
         <svg width="36" height="36" viewBox="0 0 36 36" className="transform -rotate-90">
-          <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="2" className="text-border" />
+          <circle
+            cx="18"
+            cy="18"
+            r="15"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="text-border"
+          />
           <circle
             cx="18"
             cy="18"
@@ -109,7 +111,9 @@ function TokenCard({
             stroke="currentColor"
           />
         </svg>
-        <span className={`absolute inset-0 flex items-center justify-center text-[10px] font-mono font-bold ${isLow ? "text-destructive" : "text-muted-foreground"}`}>
+        <span
+          className={`absolute inset-0 flex items-center justify-center text-[10px] font-mono font-bold ${isLow ? "text-destructive" : "text-muted-foreground"}`}
+        >
           {remaining}
         </span>
       </div>
@@ -128,7 +132,9 @@ function TokenCard({
         onClick={handleCopy}
         className="w-full flex items-center justify-center gap-3 rounded-lg bg-muted/50 hover:bg-muted py-3 px-4 transition-colors cursor-pointer"
       >
-        <span className={`font-mono text-2xl font-bold tracking-[0.3em] ${isLow ? "text-destructive animate-pulse" : "text-foreground"}`}>
+        <span
+          className={`font-mono text-2xl font-bold tracking-[0.3em] ${isLow ? "text-destructive animate-pulse" : "text-foreground"}`}
+        >
           {code.slice(0, 3)} {code.slice(3)}
         </span>
         {copied ? (
@@ -225,7 +231,7 @@ function AuthenticatorPage() {
     try {
       // Validate the secret by generating a code
       try {
-        generateToken(secret.replace(/\s/g, "").toUpperCase());
+        generateSync({ secret: secret.replace(/\s/g, "").toUpperCase() });
       } catch {
         toast.error("Secret invalide. Vérifiez la clé saisie.");
         setAdding(false);
@@ -271,9 +277,7 @@ function AuthenticatorPage() {
         url.searchParams.get("issuer") ||
         decodeURIComponent(url.pathname.split("/").pop()?.split(":")[0] || "");
       const parsedAccount =
-        decodeURIComponent(url.pathname.split("/").pop()?.split(":")[1] || "") ||
-        user?.email ||
-        "";
+        decodeURIComponent(url.pathname.split("/").pop()?.split(":")[1] || "") || user?.email || "";
 
       if (!parsedSecret) {
         toast.error("Aucun secret trouvé dans l'URI");
@@ -292,10 +296,7 @@ function AuthenticatorPage() {
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase
-      .from("authenticator_tokens")
-      .delete()
-      .eq("id", id);
+    const { error } = await supabase.from("authenticator_tokens").delete().eq("id", id);
     if (error) {
       toast.error("Suppression impossible");
       return;
@@ -307,7 +308,7 @@ function AuthenticatorPage() {
   const filtered = tokens.filter(
     (t) =>
       t.issuer.toLowerCase().includes(search.toLowerCase()) ||
-      t.account.toLowerCase().includes(search.toLowerCase())
+      t.account.toLowerCase().includes(search.toLowerCase()),
   );
 
   if (loading) {
@@ -332,16 +333,12 @@ function AuthenticatorPage() {
               Authenticator
             </h1>
             <p className="mt-2 text-muted-foreground">
-              Votre coffre-fort de codes 2FA. Utilisez SentinelMFA comme
-              alternative à Google Authenticator.
+              Votre coffre-fort de codes 2FA. Utilisez SentinelMFA comme alternative à Google
+              Authenticator.
             </p>
           </div>
           <div className="flex gap-2">
-            <Button
-              onClick={() => setScanOpen(true)}
-              variant="outline"
-              size="sm"
-            >
+            <Button onClick={() => setScanOpen(true)} variant="outline" size="sm">
               <QrCode className="h-4 w-4" />
               Scanner un QR
             </Button>
@@ -363,14 +360,11 @@ function AuthenticatorPage() {
               <KeyRound className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm">
-                Comment ça fonctionne ?
-              </h3>
+              <h3 className="font-semibold text-sm">Comment ça fonctionne ?</h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Ajoutez vos comptes en scannant un QR code ou en saisissant
-                manuellement la clé secrète. SentinelMFA génère automatiquement
-                les codes à 6 chiffres qui se renouvellent toutes les 30
-                secondes, exactement comme Google Authenticator ou Authy.
+                Ajoutez vos comptes en scannant un QR code ou en saisissant manuellement la clé
+                secrète. SentinelMFA génère automatiquement les codes à 6 chiffres qui se
+                renouvellent toutes les 30 secondes, exactement comme Google Authenticator ou Authy.
               </p>
             </div>
           </div>
@@ -396,9 +390,7 @@ function AuthenticatorPage() {
               <QrCode className="h-8 w-8" />
             </div>
             <h3 className="font-semibold text-lg">
-              {search
-                ? "Aucun résultat"
-                : "Aucun compte ajouté"}
+              {search ? "Aucun résultat" : "Aucun compte ajouté"}
             </h3>
             <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
               {search
@@ -407,10 +399,7 @@ function AuthenticatorPage() {
             </p>
             {!search && (
               <div className="mt-6 flex gap-3 justify-center">
-                <Button
-                  onClick={() => setScanOpen(true)}
-                  variant="outline"
-                >
+                <Button onClick={() => setScanOpen(true)} variant="outline">
                   <QrCode className="h-4 w-4" />
                   Scanner un QR code
                 </Button>
@@ -427,11 +416,7 @@ function AuthenticatorPage() {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((token) => (
-              <TokenCard
-                key={token.id}
-                token={token}
-                onDelete={handleDelete}
-              />
+              <TokenCard key={token.id} token={token} onDelete={handleDelete} />
             ))}
           </div>
         )}
@@ -445,9 +430,7 @@ function AuthenticatorPage() {
               <Plus className="h-5 w-5 text-primary" />
               Ajouter un compte
             </DialogTitle>
-            <DialogDescription>
-              Saisissez les informations du service à protéger.
-            </DialogDescription>
+            <DialogDescription>Saisissez les informations du service à protéger.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
@@ -479,8 +462,7 @@ function AuthenticatorPage() {
                 className="font-mono text-sm"
               />
               <p className="text-xs text-muted-foreground">
-                La clé secrète fournie par le service lors de l'activation du
-                2FA.
+                La clé secrète fournie par le service lors de l'activation du 2FA.
               </p>
             </div>
           </div>
@@ -506,8 +488,7 @@ function AuthenticatorPage() {
               Scanner ou coller un QR code
             </DialogTitle>
             <DialogDescription>
-              Collez l'URI otpauth:// que vous avez copiée ou extraite du QR
-              code.
+              Collez l'URI otpauth:// que vous avez copiée ou extraite du QR code.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
@@ -515,8 +496,7 @@ function AuthenticatorPage() {
               <Camera className="h-10 w-10 text-primary/50 mx-auto mb-3" />
               <p className="text-sm font-medium">Scan de QR code</p>
               <p className="text-xs text-muted-foreground mt-1">
-                Utilisez votre appareil pour scanner le QR code puis collez
-                l'URI ci-dessous.
+                Utilisez votre appareil pour scanner le QR code puis collez l'URI ci-dessous.
               </p>
             </div>
             <div className="space-y-2">
