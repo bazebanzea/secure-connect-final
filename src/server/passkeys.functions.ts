@@ -11,6 +11,7 @@ const FUNCTIONS_BASE = `${SUPABASE_URL}/functions/v1`;
 async function callFn<T = unknown>(name: string, body: unknown, requireAuth = false): Promise<T> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
+    apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
   };
 
   if (requireAuth) {
@@ -21,11 +22,24 @@ async function callFn<T = unknown>(name: string, body: unknown, requireAuth = fa
     headers["Authorization"] = `Bearer ${session.access_token}`;
   }
 
-  const res = await fetch(`${FUNCTIONS_BASE}/${name}`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(body),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${FUNCTIONS_BASE}/${name}`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+    });
+  } catch (e) {
+    throw new Error(
+      `Impossible de contacter le serveur Passkeys. Vérifiez que les Edge Functions WebAuthn sont déployées. (${e instanceof Error ? e.message : "Erreur réseau"})`,
+    );
+  }
+
+  if (res.status === 404) {
+    throw new Error(
+      `La fonction "${name}" n'est pas déployée. Lancez: npx supabase functions deploy ${name}`,
+    );
+  }
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));
